@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import os
 
 # 1. Page Configuration & Setup
 st.set_page_config(page_title="Fleet Diagnostics Dashboard", layout="wide")
@@ -10,9 +11,18 @@ st.title("🚚 Fleet Performance & Fuel Optimization Dashboard")
 # Load Datasets from specific tabs
 @st.cache_data
 def load_data():
-    # Use the absolute path so Streamlit can find it regardless of your working directory
-    file_path = r"c:\Users\grids\Downloads\TSL_Data_Analyst_Assessment_Pack\Processed Data\TechScoutLabs_DataAnalyst_Practical_Dataset_Enhanced.xlsx"
+    # 1. Get the directory where this script is running in the cloud
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     
+    # 2. Build the absolute file path dynamically based on the directory
+    filename = "TechScoutLabs_DataAnalyst_Practical_Dataset_Enhanced.xlsx"
+    file_path = os.path.join(current_dir, filename)
+    
+    # 3. Double check case-insensitive match if it still struggles
+    if not os.path.exists(file_path):
+        # Look for the file in the current working directory as a fallback
+        file_path = filename 
+
     # Load the core fleet records and fuel anomaly logs
     fleet_df = pd.read_excel(file_path, sheet_name="Fleet_Data")
     fuel_df = pd.read_excel(file_path, sheet_name="Fuel_Events")
